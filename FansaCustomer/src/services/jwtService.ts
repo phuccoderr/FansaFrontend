@@ -27,7 +27,10 @@ const refreshToken = async () => {
 
     return newAccessToken;
   } catch (error) {
-    console.log(error);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("info");
+    window.location.href = "/login";
     throw error;
   }
 };
