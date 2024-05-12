@@ -28,3 +28,37 @@ export const addToCart = async ({
     throw error;
   }
 };
+
+export const getCart = async (customerId: number) => {
+  try {
+    const resp = await instanceAxios.get(`${URL_CART}/${customerId}`);
+    return {
+      data: resp.data,
+      status: resp.status,
+      statusText: resp.statusText,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteCart = async ({
+  productId,
+  customerId,
+}: {
+  productId: number;
+  customerId: number;
+}) => {
+  try {
+    const resp = await instanceAxios.delete(
+      `${URL_CART}/delete/${productId}?customerId=${customerId}`,
+    );
+    return {
+      data: resp.data,
+      status: resp.status,
+      statusText: resp.statusText,
+    };
+  } catch (error) {
+    throw error;
+  }
+};

@@ -6,6 +6,8 @@ import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Order from "./pages/Order";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +21,8 @@ const App: React.FC = () => {
 
           <Route Component={ProtectedRoute}>
             <Route path="/cart" Component={Cart} />
+            <Route path="/checkout" Component={Checkout} />
+            <Route path="/order" Component={Order} />
           </Route>
         </Routes>
       </div>

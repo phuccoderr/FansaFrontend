@@ -8,6 +8,8 @@ import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
 import { CiTrash } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { cart } from "@/types/cart";
+import { deleteCart, getCart } from "@/services/cartService";
 
 const Cart: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
@@ -15,47 +17,47 @@ const Cart: React.FC = () => {
   const userInfo = info ? JSON.parse(info) : null;
   const queryClient = useQueryClient();
 
-  //   const { data, isLoading, isError } = useQuery({
-  //     queryKey: ["cart"],
-  //     queryFn: () => getCart(userInfo.id),
-  //     refetchOnWindowFocus: false,
-  //     retry: 2,
-  //     refetchOnReconnect: true,
-  //   });
-  //   const cart = data?.data;
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["cart"],
+    queryFn: () => getCart(userInfo.id),
+    refetchOnWindowFocus: false,
+    retry: 2,
+    refetchOnReconnect: true,
+  });
+  const cart = data?.data;
 
   //MUTATE DELETE
-  //   const mutateDelete = useMutation({
-  //     mutationFn: deleteCart,
-  //     onSuccess: () => {
-  //       queryClient.refetchQueries({ queryKey: ["cart"] });
-  //       toast.remove("1");
-  //       toast.error("xoá khỏi giỏ hàng thành công!");
-  //     },
-  //     onError: () => {
-  //       toast.remove("1");
-  //       toast.error("lỗi không xác định!");
-  //     },
-  //   });
+  const mutateDelete = useMutation({
+    mutationFn: deleteCart,
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ["cart"] });
+      toast.remove("1");
+      toast.success("xoá khỏi giỏ hàng thành công!");
+    },
+    onError: () => {
+      toast.remove("1");
+      toast.error("lỗi không xác định!");
+    },
+  });
 
   const handleDeleteProduct = (productId: number) => {
     toast.loading("Waiting...", {
       id: "1",
     });
-    // mutateDelete.mutate({ productId, customerId: userInfo.id });
+    mutateDelete.mutate({ productId, customerId: userInfo.id });
   };
 
-  //   useEffect(() => {
-  //     if (cart) {
-  //       let sum = 0;
-  //       cart?.map((c: cart) => {
-  //         sum = sum + c.product.price * c.quantity;
-  //       });
-  //       setTotal(sum);
-  //     }
-  //   }, [cart]);
-  //   if (isLoading) return <IsLoading />;
-  //   if (isError) return <IsError />;
+  useEffect(() => {
+    if (cart) {
+      let sum = 0;
+      cart?.map((c: cart) => {
+        sum = sum + c.product.price * c.quantity;
+      });
+      setTotal(sum);
+    }
+  }, [cart]);
+  if (isLoading) return <IsLoading />;
+  if (isError) return <IsError />;
   return (
     <>
       <Header />
@@ -71,16 +73,16 @@ const Cart: React.FC = () => {
             <hr className="w-full border-2 border-gray-400" />
             <h1>Giỏ hàng</h1>
             <h2>
-              {/* {userInfo.name} đang có {cart.length} sản phẩm trong giỏ hàng */}
+              {userInfo.name} đang có {cart.length} sản phẩm trong giỏ hàng
             </h2>
 
-            {/* {cart.map((c: cart) => (
+            {cart.map((c: cart) => (
               <div
                 key={c.id}
                 className="flex items-center gap-4 rounded p-2 shadow-lg"
               >
                 <img
-                  src={c.product.mainImage}
+                  src={c.product.main_image}
                   width={50}
                   height={50}
                   className="rounded-xl"
@@ -97,7 +99,7 @@ const Cart: React.FC = () => {
                   <CiTrash />
                 </div>
               </div>
-            ))} */}
+            ))}
           </div>
 
           <div className="m-4 flex flex-col gap-4 rounded bg-slate-500 p-4 text-white">
