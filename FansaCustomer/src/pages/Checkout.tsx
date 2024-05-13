@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { placeOrder } from "@/services/orderService";
 import { BsEmojiDizzyFill } from "react-icons/bs";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const formSchema = z.object({
   payment: z.string(),
@@ -110,6 +111,37 @@ const Checkout: React.FC = () => {
       form.setValue("total", sum);
     }
   }, [cart]);
+
+  // PAYPAL
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then((details) => {
+      let total = 0;
+      const dataPaypal = {
+        payment: "CREDIT_CARD",
+        address: form.getValues("address"),
+        phone: form.getValues("phone"),
+        name: details.payer.name,
+        total: details.purchase_units.forEach(
+          (item) => (total += item.amount.value),
+        ),
+      };
+      mutateOrder.mutate({ info: dataPaypal, customerId: userInfo.id });
+    });
+  };
+
+  const createOrder = (data, actions) => {
+    form.handleSubmit(onSubmit)();
+    return actions.order.create({
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: "0.01",
+          },
+        },
+      ],
+    });
+  };
 
   if (!dataCart) return <Navigate to="/cart" />;
   return (
@@ -232,11 +264,23 @@ const Checkout: React.FC = () => {
                   </div>
                 </div>
               ))}
+              {form.getValues("payment") == "CREDIT_CARD" && (
+                <h1 className="font-bold text-red-500">
+                  Nhập thông tin đầy đủ trước khi thanh toán Paypal
+                </h1>
+              )}
+              {form.getValues("payment") == "CREDIT_CARD" && (
+                <PayPalButtons
+                  createOrder={(data, actions) => createOrder(data, actions)}
+                  onApprove={(data, actions) => onApprove(data, actions)}
+                />
+              )}
               <hr className="w-full" />
               <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">Total:</h1>
                 <h1 className="text-xl">{total} đ</h1>
               </div>
+
               <Dialog>
                 <DialogTrigger className="rounded-[10px]" asChild>
                   <Button className="mt-2  bg-green-500 hover:bg-green-300 hover:opacity-30">
