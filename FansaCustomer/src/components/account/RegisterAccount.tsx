@@ -22,12 +22,10 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useMutation } from "@tanstack/react-query";
-// import { registerCustomer } from "@/services/signin";
 import toast from "react-hot-toast";
 import { BsEmojiDizzyFill } from "react-icons/bs";
-import { registerRequest } from "@/types/AccountRequest";
 import { register } from "@/services/Account";
-// import { registerRequest } from "@/types/accountRequest";
+import { registerRequest } from "@/types/AccountRequest";
 
 const formSchema = z
   .object({

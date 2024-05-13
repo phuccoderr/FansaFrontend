@@ -1,4 +1,3 @@
-import React from "react";
 import Header from "../Header";
 import { LuGithub } from "react-icons/lu";
 function IsError() {

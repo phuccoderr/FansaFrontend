@@ -7,9 +7,9 @@ export interface cart {
 }
 
 export interface checkoutInfo {
-  payment: string;
-  address: string;
-  name: string;
-  phone: string;
-  total: number;
+  payment?: string;
+  address?: string;
+  name?: string;
+  phone?: string;
+  total?: number;
 }

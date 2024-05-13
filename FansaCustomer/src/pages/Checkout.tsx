@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -36,7 +37,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { placeOrder } from "@/services/orderService";
 import { BsEmojiDizzyFill } from "react-icons/bs";
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import {
+  PayPalButtons,
+  PayPalButtonsComponentProps,
+} from "@paypal/react-paypal-js";
 
 const formSchema = z.object({
   payment: z.string(),
@@ -70,7 +74,7 @@ const Checkout: React.FC = () => {
   });
 
   const queryClient = useQueryClient();
-  const dataCart = queryClient.getQueryData(["cart"]);
+  const dataCart: any = queryClient.getQueryData(["cart"]);
   const cart = dataCart?.data;
 
   // MUTATE
@@ -113,29 +117,35 @@ const Checkout: React.FC = () => {
   }, [cart]);
 
   // PAYPAL
-  const onApprove = (data, actions) => {
-    return actions.order.capture().then((details) => {
-      const dataPaypal = {
-        payment: form.getValues("payment"),
-        address: form.getValues("address"),
-        phone: form.getValues("phone"),
-        name: details.payer.name.given_name,
-        total: total,
-      };
-      dataPaypal.total = total;
-
-      mutateOrder.mutate({ info: dataPaypal, customerId: userInfo.id });
-      console.log("vcc");
+  const onApprove: PayPalButtonsComponentProps["onApprove"] = (
+    data,
+    actions,
+  ) => {
+    console.log(data);
+    return new Promise(() => {
+      actions?.order?.capture().then((details: any) => {
+        const dataPaypal = {
+          payment: form.getValues("payment"),
+          address: form.getValues("address"),
+          phone: form.getValues("phone"),
+          name: details.payer.name.given_name,
+          total: total,
+        };
+        dataPaypal.total = total;
+        mutateOrder.mutate({ info: dataPaypal, customerId: userInfo.id });
+      });
     });
   };
 
-  const createOrder = (data, actions) => {
+  const createOrder = (data: any, actions: any) => {
+    console.log(data);
     return actions.order.create({
+      intent: "CAPTURE",
       purchase_units: [
         {
           amount: {
             currency_code: "USD",
-            value: total,
+            value: total.toString(),
           },
         },
       ],
