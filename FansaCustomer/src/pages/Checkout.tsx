@@ -115,28 +115,27 @@ const Checkout: React.FC = () => {
   // PAYPAL
   const onApprove = (data, actions) => {
     return actions.order.capture().then((details) => {
-      let total = 0;
       const dataPaypal = {
-        payment: "CREDIT_CARD",
+        payment: form.getValues("payment"),
         address: form.getValues("address"),
         phone: form.getValues("phone"),
-        name: details.payer.name,
-        total: details.purchase_units.forEach(
-          (item) => (total += item.amount.value),
-        ),
+        name: details.payer.name.given_name,
+        total: total,
       };
+      dataPaypal.total = total;
+
       mutateOrder.mutate({ info: dataPaypal, customerId: userInfo.id });
+      console.log("vcc");
     });
   };
 
   const createOrder = (data, actions) => {
-    form.handleSubmit(onSubmit)();
     return actions.order.create({
       purchase_units: [
         {
           amount: {
             currency_code: "USD",
-            value: "0.01",
+            value: total,
           },
         },
       ],
